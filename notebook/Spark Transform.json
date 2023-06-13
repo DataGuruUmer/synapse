@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "aa33489c-e2e4-4071-ad44-7d02d2102ed9"
+				"spark.autotune.trackingId": "3bd29159-a3f3-4890-98a7-b28efa031450"
 			}
 		},
 		"metadata": {
@@ -74,7 +74,7 @@
 					"order_details = spark.read.csv('/data/*.csv', header=True, inferSchema=True)\n",
 					"display(order_details.limit(5))"
 				],
-				"execution_count": null
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -116,7 +116,7 @@
 					"\r\n",
 					"display(transformed_df.limit(5))"
 				],
-				"execution_count": null
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -158,7 +158,7 @@
 					"transformed_df.write.mode(\"overwrite\").parquet('/transformed_data/orders.parquet')\r\n",
 					"print (\"Transformed data saved!\")"
 				],
-				"execution_count": null
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -205,14 +205,14 @@
 					"collapsed": false
 				},
 				"source": [
-					"from pyspark.sql.functions import year, month, col\r\n",
+					"from pyspark.sql.functions import year, month,dayofmonth, col\r\n",
 					"\r\n",
-					"dated_df = transformed_df.withColumn(\"Year\", year(col(\"OrderDate\"))).withColumn(\"Month\", month(col(\"OrderDate\")))\r\n",
+					"dated_df = transformed_df.withColumn(\"Year\", year(col(\"OrderDate\"))).withColumn(\"Month\", month(col(\"OrderDate\"))).withColumn(\"Day\", dayofmonth(col(\"OrderDate\")))\r\n",
 					"display(dated_df.limit(5))\r\n",
-					"dated_df.write.partitionBy(\"Year\",\"Month\").mode(\"overwrite\").parquet(\"/partitioned_data\")\r\n",
+					"dated_df.write.partitionBy(\"Year\",\"Month\",\"Day\").mode(\"overwrite\").parquet(\"/partitioned_data\")\r\n",
 					"print (\"Transformed data saved!\")"
 				],
-				"execution_count": null
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -244,10 +244,10 @@
 					"collapsed": false
 				},
 				"source": [
-					"orders_2020 = spark.read.parquet('/partitioned_data/Year=2020/Month=*')\r\n",
+					"orders_2020 = spark.read.parquet('/partitioned_data/Year=2020/Month=*/**')\r\n",
 					"display(orders_2020.limit(5))"
 				],
-				"execution_count": null
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -284,7 +284,7 @@
 				"source": [
 					"order_details.write.saveAsTable('sales_orders', format='parquet', mode='overwrite', path='/sales_orders_table')"
 				],
-				"execution_count": null
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
@@ -320,7 +320,7 @@
 					"display(sql_transform.limit(5))\r\n",
 					"sql_transform.write.partitionBy(\"Year\",\"Month\").saveAsTable('transformed_orders', format='parquet', mode='overwrite', path='/transformed_orders_table')"
 				],
-				"execution_count": null
+				"execution_count": 16
 			},
 			{
 				"cell_type": "markdown",
@@ -347,7 +347,7 @@
 					"WHERE Year = 2021\r\n",
 					"    AND Month = 1"
 				],
-				"execution_count": null
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
